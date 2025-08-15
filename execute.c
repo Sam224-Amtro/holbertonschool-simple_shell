@@ -99,14 +99,3 @@ void search_path(int ac, char **av)
 		free(path_copy);
 	}
 }
-
-/**
-* main - point d'entrée
-*/
-int main(int ac, char **av, char **env)
-{
-	test_env(env);
-
-	search_path(ac, av);
-	return (0);
-}

@@ -33,7 +33,7 @@ void print_error(char *prog_name, char *cmd)
 }
 
 /**
-* remove trailing newline - Removes the '\n' character at the end of the string
+* remove_trailing_newline - Removes the '\n' character at the end of the string
 * @str: String to clean
 */
 void remove_trailing_newline(char *str)

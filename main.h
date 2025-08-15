@@ -20,10 +20,10 @@ char *read_line(void);
 char **parse_line(char *line);
 
 /* execute.c */
-int execute_command(char **args);
+void execute_command(char **args);
 void test_env(char **env);
 void search_path(int ac, char **av);
-int main(int ac, char **av, char **env);
+
 
 
 /* utils.c */

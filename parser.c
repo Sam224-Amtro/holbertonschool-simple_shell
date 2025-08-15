@@ -51,7 +51,7 @@ char **parse_line(char *line)
 	token = strtok(line, " \t\r\n");
 	while (token != NULL)
 	{
-		tokens[position++] = token;
+		 tokens[position++] = strdup(token);
 
 		if (position >= bufsize)
 		{
