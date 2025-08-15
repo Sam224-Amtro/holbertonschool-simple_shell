@@ -11,12 +11,13 @@
  */
 char **parse_line(char *line)
 {
-	char **args = malloc(TOK_BUFSIZE * sizeof(char *));
+	char **args;
 	char *token;
 	char **tmp;
 	int bufsize = TOK_BUFSIZE;
 	int i = 0;
 
+	args = malloc(TOK_BUFSIZE * sizeof(char *));
 	if (!args)
 	{
 		perror("malloc");
