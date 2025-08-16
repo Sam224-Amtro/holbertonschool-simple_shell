@@ -5,10 +5,10 @@
 #include <unistd.h>
 
 /**
- * get_path_from_env - retrieves PATH value from envp
- * @envp: array of environment variables
+ * get_path_from_env - Récupère la valeur de la variable PATH depuis envp
+ * @envp: Tableau des variables d'environnement
  *
- * Return: pointer to PATH string if found, otherwise NULL
+ * Return: Chaîne contenant la valeur de PATH si trouvée, NULL sinon
  */
 char *get_path_from_env(char **envp)
 {
@@ -23,11 +23,12 @@ char *get_path_from_env(char **envp)
 	return (NULL);
 }
 /**
- * find_full_path - Finds the full path of a command via PATH
- * @command: command name (e.g. "ls")
- * @envp: array of environment variables
+ * find_full_path - Cherche le chemin complet d'une commande dans le PATH
+ * @command: Nom de la commande à chercher
+ * @envp: Tableau des variables d'environnement
  *
- * Return: full path (to free) if found, otherwise NULL
+ * Return: Chaîne contenant le chemin complet si trouvé,
+ *         NULL sinon
  */
 char *find_full_path(char *command, char **envp)
 {

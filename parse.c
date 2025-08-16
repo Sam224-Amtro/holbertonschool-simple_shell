@@ -4,10 +4,10 @@
 #include <string.h>
 
 /**
- * parse_line - Splits the command line into tokens (words)
- * @line: line entered by the user
+ * parse_line - Divise la ligne de commande en tokens (mots)
+ * @line : ligne saisie par l'utilisateur
  *
- * Return: array of strings terminated by NULL (to be freed after use)
+ * Retour : tableau de chaînes terminées par NULL (à libérer après utilisation)
  */
 char **parse_line(char *line)
 {
