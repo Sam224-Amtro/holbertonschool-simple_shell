@@ -1,115 +1,101 @@
+#include "main.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <unistd.h>
-#include <sys/wait.h>
-
-#define MAX_LINE 1024
 
 /**
- * remove_trailing_newline - removes the final line break from a string
- * @line: string to be processed
+ * remove_trailing_newline - Supprime le '\n' à la fin d'une chaîne
+ * @line: chaîne à nettoyer
  */
 void remove_trailing_newline(char *line)
 {
-	size_t len;
+	int i;
 
-	if (!line)
-		return;
-
-	len = strlen(line);
-
-	if (len > 0 && line[len - 1] == '\n')
+	for (i = 0; line[i] != '\0'; i++)
 	{
-		line[len - 1] = '\0';
-	}
-}
-
-/**
- * execute_command - Executes a simple command entered by the user
- * @line: string representing the command
- */
-void execute_command(char *line)
-{
-	pid_t pid;
-	int status;
-	char *args[2];
-
-	if (strcmp(line, "") == 0)
-		return;
-
-	pid = fork();
-
-	if (pid < 0)
-	{
-		perror("fork failed");
-	}
-	else if (pid == 0)
-	{
-		args[0] = line;
-		args[1] = NULL;
-
-		if (execvp(args[0], args) == -1)
+		if (line[i] == '\n')
 		{
-			perror("execvp failed");
+			line[i] = '\0';
+			break;
 		}
-
-		exit(EXIT_FAILURE);
-	}
-	else
-	{
-		wait(&status);
 	}
 }
-
 /**
- * shell_loop - main shell loop
- * @argv: array of arguments (not used)
- * @envp: array of environment variables (not used)
+ * shell_loop - Boucle principale du shell
+ * @argv: arguments du programme (argv[0] = nom)
+ * @envp: tableau des variables d'environnement
  */
 void shell_loop(char **argv, char **envp)
 {
-	char line[MAX_LINE];
-	(void)argv;
-	(void)envp;
+	char *line;
+	char *full_path;
+	size_t len;
+	ssize_t n_read;
+	char **args;
+	int exit_status;
+
+	line = NULL;
+	len = 0;
+	exit_status = 0;
 
 	while (1)
 	{
-		printf("$ ");
-		fflush(stdout);
+		if (isatty(STDIN_FILENO))
+			printf("$ ");
 
-		if (!fgets(line, MAX_LINE, stdin))
+		n_read = getline(&line, &len, stdin);
+		if (n_read == -1)
 		{
-			printf("\n");
-			break;
+			if (isatty(STDIN_FILENO))
+				printf("\n");
+			free(line);
+			if (!isatty(STDIN_FILENO))
+				exit(exit_status);
+			else
+				exit(0);
 		}
 
 		remove_trailing_newline(line);
+		args = parse_line(line);
 
-		if (strcmp(line, "exit") == 0)
+		if (args[0] != NULL)
 		{
-			break;
+			if (handle_builtin(args, envp, line))
+			{
+				free(args);
+				continue;
+			}
+
+			full_path = find_full_path(args[0], envp);
+			if (full_path != NULL)
+			{
+				exit_status = execute_command(full_path, args, envp);
+				free(full_path);
+			}
+			else
+			{
+				fprintf(stderr, "%s: 1: %s: not found\n", argv[0], args[0]);
+				exit_status = 127;
+			}
 		}
 
-		execute_command(line);
+		free(args);
 	}
+
+	free(line);
 }
 
 /**
- * main - Shell entry point
- * @argc: number of arguments passed (not used here)
- * @argv: array of arguments (argv[0] = program name)
- * @envp: array containing environment variables
+ * main - Point d'entrée du shell
+ * @argc: nombre d'arguments passés (non utilisé ici)
+ * @argv: tableau des arguments (argv[0] = nom du programme)
+ * @envp: tableau contenant les variables d'environnement
  *
- * Return: 0 on success
+ * Return: 0 en cas de succès
  */
 int main(int argc, char **argv, char **envp)
 {
 	(void)argc;
-	(void)argv;
-	(void)envp;
-
 	shell_loop(argv, envp);
-
 	return (0);
 }

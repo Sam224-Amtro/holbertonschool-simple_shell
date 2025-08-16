@@ -14,24 +14,24 @@ char **parse_line(char *line)
 	char **args;
 	char *token;
 	char **tmp;
-	int bufsize = TOK_BUFSIZE;
+	int bufsize = 64;
 	int i = 0;
 
-	args = malloc(TOK_BUFSIZE * sizeof(char *));
+	args = malloc(bufsize * sizeof(char *));
 	if (!args)
 	{
 		perror("malloc");
 		exit(EXIT_FAILURE);
 	}
 
-	token = strtok(line, TOK_DELIM);
+	token = strtok(line, "\t\r\n");
 	while (token != NULL)
 	{
 		args[i++] = strdup(token);
 
 		if (i >= bufsize)
 		{
-			bufsize += TOK_BUFSIZE;
+			bufsize += 64;
 			tmp = realloc(args, bufsize * sizeof(char *));
 			if (!tmp)
 			{
@@ -41,7 +41,7 @@ char **parse_line(char *line)
 			args = tmp;
 		}
 
-		token = strtok(NULL, TOK_DELIM);
+		token = strtok(NULL, "\t\r\n");
 	}
 
 	args[i] = NULL;
