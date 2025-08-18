@@ -6,19 +6,26 @@
 #include <sys/wait.h>
 
 /**
- * main - Entry point of the simple shell
+ * main - simple shell
  *
  * Return: Always 0
  */
 int main(void)
 {
-	char *line = NULL;
-	size_t len = 0;
+	char *line;
+	size_t len;
 	ssize_t nread;
+
+	line = NULL;
+	len = 0;
 
 	while (1)
 	{
-		printf("$ "); /* Prompt */
+		pid_t pid;
+		char *args[2];
+		int status;
+
+		printf("$ ");
 		nread = getline(&line, &len, stdin);
 		if (nread == -1)
 		{
@@ -26,6 +33,7 @@ int main(void)
 			printf("\n");
 			exit(EXIT_SUCCESS);
 		}
+
 		if (line[nread - 1] == '\n')
 			line[nread - 1] = '\0';
 
@@ -35,16 +43,19 @@ int main(void)
 			exit(EXIT_SUCCESS);
 		}
 
-		pid_t pid = fork();
+		pid = fork();
 		if (pid == -1)
 		{
 			perror("fork");
 			free(line);
 			exit(EXIT_FAILURE);
 		}
+
 		if (pid == 0)
 		{
-			char *args[] = {line, NULL};
+			args[0] = line;
+			args[1] = NULL;
+
 			if (execvp(args[0], args) == -1)
 			{
 				perror("execvp");
@@ -53,7 +64,7 @@ int main(void)
 		}
 		else
 		{
-			wait(NULL);
+			wait(&status);
 		}
 	}
 
