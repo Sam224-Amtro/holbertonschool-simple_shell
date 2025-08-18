@@ -19,5 +19,4 @@ char *find_full_path(char *command, char **envp);
 int execute_command(char *command, char **args, char **envp);
 int handle_builtin(char **args, char **envp, char *line);
 
-
 #endif /* MAIN_H */
