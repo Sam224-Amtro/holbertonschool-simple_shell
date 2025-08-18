@@ -9,6 +9,8 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
+#define MAX_INPUT 1024
+
 
 char **_realloc_args(char **args, int old_size, int new_size);
 char *get_path_from_env(char **envp);

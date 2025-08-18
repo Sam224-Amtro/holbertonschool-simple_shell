@@ -1,101 +1,44 @@
 #include "main.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
 
 /**
- * remove_trailing_newline - Supprime le '\n' à la fin d'une chaîne
- * @line: chaîne à nettoyer
+ * main- Start of the program simple shell, who behave with less options, like
+ * a shell.
+ * @ac: Number of arguments passed in function
+ * @av: Array which contain all the arguments passed in function
+ * @env: Points to an array that contain all the environnment variables
+ * available to the process
+ * Return: -1 on failure, 0 on success
  */
-void remove_trailing_newline(char *line)
-{
-	int i;
 
-	for (i = 0; line[i] != '\0'; i++)
-	{
-		if (line[i] == '\n')
-		{
-			line[i] = '\0';
-			break;
-		}
-	}
-}
-/**
- * shell_loop - Boucle principale du shell
- * @argv: arguments du programme (argv[0] = nom)
- * @envp: tableau des variables d'environnement
- */
-void shell_loop(char **argv, char **envp)
+int main(int ac, char **av, char **env)
 {
-	char *line;
-	char *full_path;
-	size_t len;
-	ssize_t n_read;
-	char **args;
-	int exit_status;
-
-	line = NULL;
-	len = 0;
-	exit_status = 0;
+	ssize_t check = 0;
+	size_t size_buffer = 0;
+	char *line = NULL, **_argv = NULL;
+	(void)ac;
 
 	while (1)
 	{
-		if (isatty(STDIN_FILENO))
-			printf("$ ");
-
-		n_read = getline(&line, &len, stdin);
-		if (n_read == -1)
+		if (isatty(STDIN_FILENO) == 1)
+			printf("($) ");
+		check = getline(&line, &size_buffer, stdin);
+		if (check == -1)
 		{
-			if (isatty(STDIN_FILENO))
-				printf("\n");
-			free(line);
-			if (!isatty(STDIN_FILENO))
-				exit(exit_status);
-			else
-				exit(0);
+			free_arguments(_argv, line);
+			break;
 		}
-
-		remove_trailing_newline(line);
-		args = parse_line(line);
-
-		if (args[0] != NULL)
+		line[(strlen(line) - 1)] = '\0';
+		if (line == NULL)
+			printf("%s: 1: %s: not found\n", av[0], _argv[0]);
+		else if (line != NULL)
 		{
-			if (handle_builtin(args, envp, line))
-			{
-				free(args);
-				continue;
-			}
-
-			full_path = find_full_path(args[0], envp);
-			if (full_path != NULL)
-			{
-				exit_status = execute_command(full_path, args, envp);
-				free(full_path);
-			}
-			else
-			{
-				fprintf(stderr, "%s: 1: %s: not found\n", argv[0], args[0]);
-				exit_status = 127;
-			}
+			_argv = argv_for_shell(line);
+			if ((executing_program(line, _argv, env)) == 11)
+				printf("%s: 1: %s: not found\n", av[0], _argv[0]);
 		}
-
-		free(args);
+		free_arguments(_argv, line);
+		line = NULL;
+		_argv = NULL;
 	}
-
-	free(line);
-}
-
-/**
- * main - Point d'entrée du shell
- * @argc: nombre d'arguments passés (non utilisé ici)
- * @argv: tableau des arguments (argv[0] = nom du programme)
- * @envp: tableau contenant les variables d'environnement
- *
- * Return: 0 en cas de succès
- */
-int main(int argc, char **argv, char **envp)
-{
-	(void)argc;
-	shell_loop(argv, envp);
 	return (0);
 }
