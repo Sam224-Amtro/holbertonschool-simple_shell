@@ -1,93 +1,54 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
-#include <sys/types.h>
+#include <unistd.h>
 #include <sys/wait.h>
 
 /**
- * read_line - Lit une ligne depuis l'entrée standard
+ * main - Boucle principale du shell
  *
- * Return: Pointeur vers la ligne lue (doit être free par l'appelant)
+ * Return: Always 0
  */
-char *read_line(void)
-{
-	char *line = NULL;
-	size_t len = 0;
-	ssize_t nread;
 
-	printf("$ ");
-	nread = getline(&line, &len, stdin);
-	if (nread == -1)
-	{
-		free(line);
-		printf("\n");
-		exit(EXIT_SUCCESS);
-	}
-
-	if (line[nread - 1] == '\n')
-		line[nread - 1] = '\0';
-
-	return (line);
-}
-
-/**
- * execute_command - Exécute une commande simple
- * @line: La commande à exécuter
- */
-void execute_command(char *line)
-{
-	pid_t pid;
-	char *args[2];
-	int status;
-
-	if (strcmp(line, "exit") == 0)
-	{
-		free(line);
-		exit(EXIT_SUCCESS);
-	}
-
-	pid = fork();
-	if (pid == -1)
-	{
-		perror("fork");
-		free(line);
-		exit(EXIT_FAILURE);
-	}
-
-	if (pid == 0)
-	{
-		args[0] = line;
-		args[1] = NULL;
-
-		if (execvp(args[0], args) == -1)
-		{
-			perror("execvp");
-			exit(EXIT_FAILURE);
-		}
-	}
-	else
-	{
-		wait(&status);
-	}
-}
-
-/**
- * main - Point d'entrée de la simple_shell
- *
- * Return: Toujours 0
- */
 int main(void)
 {
-	char *line;
+	char buffer[1024];
+	char *args[64];
+	int i = 0;
 
 	while (1)
 	{
-		line = read_line();
+		printf("$ ");
+		fgets(buffer, 1024, stdin);
+		buffer[strcspn(buffer, "\n")] = 0;
 
-		execute_command(line);
+		if (strcmp(buffer, "exit") == 0)
+			break;
 
-		free(line);
+		args[i] = strtok(buffer, " ");
+
+		while (args[i] != NULL)
+		{
+			i++;
+			args[i] = strtok(NULL, " ");
+		}
+
+		pid_t pid = fork();
+
+		if (pid == 0)
+		{
+			if (execvp(args[0], args) == -1)
+			{
+				perror("Erreur");
+			}
+			exit(0);
+		} else if (pid > 0)
+		{
+			wait(NULL);
+		} else
+		{
+			perror("fork");
+		}
 	}
 
 	return (0);
