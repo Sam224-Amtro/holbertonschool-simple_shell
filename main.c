@@ -1,44 +1,62 @@
-#include "main.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 /**
- * main- Start of the program simple shell, who behave with less options, like
- * a shell.
- * @ac: Number of arguments passed in function
- * @av: Array which contain all the arguments passed in function
- * @env: Points to an array that contain all the environnment variables
- * available to the process
- * Return: -1 on failure, 0 on success
+ * main - Entry point of the simple shell
+ *
+ * Return: Always 0
  */
-
-int main(int ac, char **av, char **env)
+int main(void)
 {
-	ssize_t check = 0;
-	size_t size_buffer = 0;
-	char *line = NULL, **_argv = NULL;
-	(void)ac;
+	char *line = NULL;
+	size_t len = 0;
+	ssize_t nread;
 
 	while (1)
 	{
-		if (isatty(STDIN_FILENO) == 1)
-			printf("($) ");
-		check = getline(&line, &size_buffer, stdin);
-		if (check == -1)
+		printf("$ "); /* Prompt */
+		nread = getline(&line, &len, stdin);
+		if (nread == -1)
 		{
-			free_arguments(_argv, line);
-			break;
+			free(line);
+			printf("\n");
+			exit(EXIT_SUCCESS);
 		}
-		line[(strlen(line) - 1)] = '\0';
-		if (line == NULL)
-			printf("%s: 1: %s: not found\n", av[0], _argv[0]);
-		else if (line != NULL)
+		if (line[nread - 1] == '\n')
+			line[nread - 1] = '\0';
+
+		if (strcmp(line, "exit") == 0)
 		{
-			_argv = argv_for_shell(line);
-			if ((executing_program(line, _argv, env)) == 11)
-				printf("%s: 1: %s: not found\n", av[0], _argv[0]);
+			free(line);
+			exit(EXIT_SUCCESS);
 		}
-		free_arguments(_argv, line);
-		line = NULL;
-		_argv = NULL;
+
+		pid_t pid = fork();
+		if (pid == -1)
+		{
+			perror("fork");
+			free(line);
+			exit(EXIT_FAILURE);
+		}
+		if (pid == 0)
+		{
+			char *args[] = {line, NULL};
+			if (execvp(args[0], args) == -1)
+			{
+				perror("execvp");
+				exit(EXIT_FAILURE);
+			}
+		}
+		else
+		{
+			wait(NULL);
+		}
 	}
+
+	free(line);
 	return (0);
 }
