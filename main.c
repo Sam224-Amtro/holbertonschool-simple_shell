@@ -12,44 +12,53 @@
 
 int main(void)
 {
-	char buffer[1024];
+	char *line = NULL;
+	size_t len = 0;
 	char *args[64];
 	int i = 0;
 
 	while (1)
 	{
 		printf("$ ");
-		fgets(buffer, 1024, stdin);
-		buffer[strcspn(buffer, "\n")] = 0;
+		fflush(stdout);
 
-		if (strcmp(buffer, "exit") == 0)
+		if (getline(&line, &len, stdin) == -1)
 			break;
 
-		args[i] = strtok(buffer, " ");
+		line[strcspn(line, "\n")] = 0;
 
-		while (args[i] != NULL)
+		if (strcmp(line, "exit") == 0)
+			break;
+
+		args[i] = strtok(line, " ");
+		while (args[i] != NULL && i < 63)
 		{
 			i++;
 			args[i] = strtok(NULL, " ");
 		}
 
+		args[i] = NULL;
+
 		pid_t pid = fork();
 
 		if (pid == 0)
 		{
-			if (execvp(args[0], args) == -1)
+			if (execve(args[0], args, NULL) == -1)
 			{
 				perror("Erreur");
+				_exit(1);
 			}
-			exit(0);
-		} else if (pid > 0)
+		}
+		else if (pid > 0)
 		{
 			wait(NULL);
-		} else
+		}
+		else
 		{
 			perror("fork");
 		}
 	}
 
-	return (0);
+	free(line);
+	return 0;
 }
