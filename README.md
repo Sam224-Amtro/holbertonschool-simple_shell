@@ -1,3 +1,50 @@
+
+_ FEUILLE DE ROUTE _
+ 1. Fichiers principaux
+
+main.c
+→ Contient la boucle principale :
+
+Affiche le prompt ($ en mode interactif).
+
+Lit la ligne avec getline.
+
+Parse la ligne (parse_line).
+
+Vérifie si c’est un builtin (handle_builtin).
+
+Cherche le chemin complet (find_full_path).
+
+Exécute la commande (execute_command).
+
+Libère la mémoire.
+
+parse_line.c
+→ Découpe la ligne en tokens (arguments), renvoie un tableau terminé par NULL.
+→ Inclut une fonction free_args pour libérer ce tableau.
+
+builtins.c
+→ Gère les commandes internes :
+
+exit → quitte le shell.
+
+env → affiche l’environnement.
+
+execute_command.c
+→ Fork + execve.
+→ Retourne le code d’état du processus.
+→ Affiche un message d’erreur si execve échoue.
+
+path.c
+→ get_env_path → récupère PATH depuis environ.
+→ find_full_path → construit le chemin complet d’une commande (/bin/ls, /usr/bin/gcc, etc.).
+
+helpers.c (optionnel)
+→ Fonctions d’aide (_realloc_args, free_args, etc.).
+
+main.h
+→ Header avec toutes les déclarations de fonctions + includes.
+
 _ FEUILLE DE ROUTE _
 Construction d'un mini-shell
 1. La structure du répertoire

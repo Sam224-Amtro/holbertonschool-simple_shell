@@ -40,6 +40,7 @@ char **parse_line(char *line)
 	int bufsize = 64, position = 0;
 
 	char **tokens = malloc(bufsize * sizeof(char *));
+
 	char *token;
 
 	if (!tokens)

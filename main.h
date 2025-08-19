@@ -11,8 +11,7 @@
 
 extern char **environ;
 
-/* main.c */
-int main(int argc, char **argv);
+/* shell.c */
 void shell_loop(void);
 
 /* parser.c */
@@ -20,15 +19,19 @@ char *read_line(void);
 char **parse_line(char *line);
 
 /* execute.c */
-void execute_command(char **args);
-void test_env(char **env);
-void search_path(int ac, char **av);
+int execute_command(char *command, char **args, char **envp);
 
+/* builtin.c */
+int handle_builtin(char **args, char **envp, char *line);
 
+/* path.c */
+char *get_env_path(char **envp);
+char *find_full_path(char *command, char **envp);
 
 /* utils.c */
+char **_realloc_args(char **args, int old_size, int new_size);
 void free_args(char **args);
 void print_error(char *prog_name, char *cmd);
 void remove_trailing_newline(char *str);
 
-#endif
+#endif /* MAIN_H */

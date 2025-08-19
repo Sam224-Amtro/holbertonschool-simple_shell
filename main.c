@@ -1,63 +1,64 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "main.h"
 #include <unistd.h>
+#include <string.h>
+#include <sys/wait.h>
+#include <errno.h>
+#include "main.h"
 
 /**
-* main - Entry point for the simple shell program
-* @argc: Argument count
-* @argv: Argument vector
+* main - Boucle principale du shell
 *
-* Description: This function starts the shell by calling shell_loop().
-* It ignores command-line arguments for now.
-*
-* Return: Always 0 on success
+* Return: Always 0
 */
-int main(int argc, char **argv)
-{
-	(void)argc;
-	(void)argv;
 
-	shell_loop();
-	return (0);
-}
+extern char **environ;
 
-/**
-* shell_loop - Main loop of the shell
-*
-* Displays a prompt (if in interactive mode), waits for user input,
-* reads a line using getline(), removes the trailing newline, and currently
-* just prints back the line. The loop stops when EOF (Ctrl+D) is received.
-*
-* Return: Nothing
-*/
-void shell_loop(void)
+int main(void)
 {
-	char *line;
-	char **args;
+	char *line = NULL;
+
+	size_t len = 0;
+	ssize_t nread;
+	pid_t pid;
 
 	while (1)
 	{
 		if (isatty(STDIN_FILENO))
-		{
 			printf("$ ");
-		}
 
-line = read_line();
-		if (!line)
+	nread = getline(&line, &len, stdin);
+		if (nread == -1)
 		{
 			if (isatty(STDIN_FILENO))
-			{
 				printf("\n");
-			}
 			break;
 		}
 
-		args = parse_line(line);
-		execute_command(args);
+		line[strcspn(line, "\n")] = '\0';
+		if (line[0] == '\0')
+			continue;
 
-		free_args(args);
-		free(line);
+		pid = fork();
+		if (pid == 0)
+		{
+			char *argv_child[] = { line, NULL };
+
+			execve(line, argv_child, environ);
+
+			fprintf(stderr, "simple_shell: %s: not found\n", line);
+			_exit(127);
+		}
+		else if (pid > 0)
+		{
+			wait(NULL);
+		}
+		else
+		{
+			perror("fork");
+		}
+
+	free(line);
+	return (0);
 	}
 }
-
