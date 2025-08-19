@@ -53,7 +53,9 @@ void shell_loop(char **argv, char **envp)
 		if (args[0] != NULL)
 		{
 			if (handle_builtin(args, envp, line))
+			{
 				continue;
+			}
 			full_path = find_full_path(args[0], envp);
 			if (full_path)
 			{
