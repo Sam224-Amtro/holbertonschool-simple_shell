@@ -1,23 +1,22 @@
 #include "main.h"
 
 /**
- * execute_command - Crée un processus pour exécuter une commande
+ * execute_command - Crée un processus fils et exécute une commande
  * @command: chemin absolu de la commande à exécuter
- * @args: tableau d'arguments à passer à execve
+ * @args: tableau des arguments (args[0] = nom de la commande)
  * @envp: tableau des variables d'environnement
  *
- * * Return: code de retour du processus exécuté
- * (0 si succès, autre valeur si erreur)
  * Description :
- * Cette fonction crée un processus fils pour exécuter une commande
- * en utilisant execve. Le processus parent attend que le fils termine.
- * Si execve échoue dans le fils, celui-ci quitte avec le code 127
- * (convention Unix pour "commande non trouvée").
+ * Cette fonction fork le processus courant, puis exécute la commande
+ * spécifiée dans le processus fils avec ses arguments et l'environnement.
+ * Le processus parent attend la fin du fils et récupère son code de retour.
+ *
+ * Return: code de retour du processus fils, ou -1 en cas d’erreur.
  */
 int execute_command(char *command, char **args, char **envp)
 {
-	int status;
 	pid_t pid;
+	int status;
 
 	pid = fork();
 
@@ -26,7 +25,6 @@ int execute_command(char *command, char **args, char **envp)
 		perror("fork");
 		return (-1);
 	}
-
 	if (pid == 0)
 	{
 		execve(command, args, envp);

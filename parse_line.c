@@ -1,48 +1,42 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "main.h"
 
 /**
- * parse_line - Divise la ligne de commande en tokens (mots)
- * @line : ligne saisie par l'utilisateur
+ * parse_line - Découpe une ligne en arguments (tokens)
+ * @line: chaîne entrée par l’utilisateur
  *
- * Retour : tableau de chaînes terminées par NULL (à libérer après utilisation)
+ * Return: tableau de pointeurs vers les arguments, ou NULL en cas d’erreur
  */
 char **parse_line(char *line)
 {
-	char **args;
 	char *token;
-	char **tmp;
+	char **args;
 	int bufsize = 64;
-	int i = 0;
+	int k = 0;
 
-	args = malloc(bufsize * sizeof(char *));
+	args = malloc(sizeof(char *) * bufsize);
 	if (!args)
 	{
 		perror("malloc");
 		exit(EXIT_FAILURE);
 	}
 
-	token = strtok(line, "\t\r\n");
+	token = strtok(line, " \t\r\n");
 	while (token != NULL)
 	{
-		args[i++] = strdup(token);
+		args[k++] = token;
 
-		if (i >= bufsize)
+		if (k >= bufsize)
 		{
 			bufsize += 64;
-			tmp = realloc(args, bufsize * sizeof(char *));
-			if (!tmp)
+			args = _realloc_args(args, k, bufsize);
+			if (!args)
 			{
 				perror("realloc");
 				exit(EXIT_FAILURE);
 			}
-			args = tmp;
 		}
-
 		token = strtok(NULL, "\t\r\n");
 	}
-
-	args[i] = NULL;
+	args[k] = NULL;
 	return (args);
 }

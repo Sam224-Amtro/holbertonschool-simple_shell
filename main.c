@@ -1,64 +1,88 @@
+#include "main.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <unistd.h>
-#include <sys/wait.h>
-
 /**
- * main - Boucle principale du shell
- *
- * Return: Always 0
+ * remove_trailing_newline - enlève le '\n' final d'une chaîne
+ * @line: chaîne à modifier
  */
-
-int main(void)
+void remove_trailing_newline(char *line)
 {
-	char *line = NULL;
+	int i;
+
+	for (i = 0; line[i] != '\0'; i++)
+	{
+		if (line[i] == '\n')
+		{
+			line[i] = '\0';
+			break;
+		}
+	}
+}
+/**
+ * shell_loop - boucle principale du shell
+ * @argv: tableau des arguments du programme
+ * @envp: tableau des variables d'environnement
+ */
+void shell_loop(char **argv, char **envp)
+{
+	char *line = NULL, *full_path;
 	size_t len = 0;
-	char *args[64];
-	int i = 0;
+	ssize_t n_read;
+	char **args;
+	int exit_status = 0;
 
 	while (1)
 	{
-		printf("$ ");
-		fflush(stdout);
-
-		if (getline(&line, &len, stdin) == -1)
-			break;
-
-		line[strcspn(line, "\n")] = 0;
-
-		if (strcmp(line, "exit") == 0)
-			break;
-
-		args[i] = strtok(line, " ");
-		while (args[i] != NULL && i < 63)
+		if (isatty(STDIN_FILENO))
+			printf("$ ");
+		n_read = getline(&line, &len, stdin);
+		if (n_read == -1)
 		{
-			i++;
-			args[i] = strtok(NULL, " ");
+			if (isatty(STDIN_FILENO))
+				printf("\n");
+			free(line);
+			if (!isatty(STDIN_FILENO))
+				exit(exit_status);
+			else
+				exit(0);
 		}
+		remove_trailing_newline(line);
+		args = parse_line(line);
 
-		args[i] = NULL;
-
-		pid_t pid = fork();
-
-		if (pid == 0)
+		if (args[0] != NULL)
 		{
-			if (execve(args[0], args, NULL) == -1)
+			if (handle_builtin(args, envp, line))
+				continue;
+			full_path = find_full_path(args[0], envp);
+			if (full_path)
 			{
-				perror("Erreur");
-				_exit(1);
+				exit_status = execute_command(full_path, args, envp);
+				free(full_path);
+			}
+			else
+			{
+				fprintf(stderr, "%s: 1: %s: not found\n", argv[0], args[0]);
+				exit_status = 127;
 			}
 		}
-		else if (pid > 0)
-		{
-			wait(NULL);
-		}
-		else
-		{
-			perror("fork");
-		}
+		free(args);
 	}
-
+	if (!isatty(STDIN_FILENO))
+		exit(exit_status);
 	free(line);
-	return 0;
+}
+/**
+ * main - point d'entrée du shell
+ * @argc: nombre d'arguments (non utilisé)
+ * @argv: tableau des arguments
+ * @envp: tableau des variables d'environnement
+ *
+ * Return: 0 en cas de succès
+ */
+int main(int argc, char **argv, char **envp)
+{
+	(void)argc;
+	shell_loop(argv, envp);
+	return (0);
 }

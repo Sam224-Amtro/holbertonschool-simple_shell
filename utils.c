@@ -1,19 +1,20 @@
 #include "main.h"
 
 /**
- * get_env_path - Récupère la valeur de la variable PATH depuis envp
+ * get_path_from_env - Récupère la valeur de la variable PATH depuis envp
  * @envp: tableau des variables d'environnement
  *
  * Description :
- * Parcourt le tableau envp (chaînes de la forme "NOM=VALEUR") à la recherche
- * de "PATH=". Si trouvée, retourne un pointeur vers le début de la valeur
- * (après "PATH="). Sinon, retourne NULL.
+ * Parcourt envp (tableau de chaînes "NOM=VALEUR") à la recherche de "PATH=".
+ * Si trouvée, retourne pointeur vers le début de la valeur (après "PATH=").
+ * Sinon, retourne NULL.
  *
- * Return: pointeur vers la valeur de PATH (ne pas free), ou NULL si absente
+ * Return: pointeur vers la valeur de PATH (ne pas free!), ou NULL si absente
  */
-char *get_env_path(char **envp)
+char *get_path_from_env(char **envp)
 {
 	int k;
+
 
 	for (k = 0; envp[k] != NULL; k++)
 	{
@@ -22,6 +23,7 @@ char *get_env_path(char **envp)
 	}
 	return (NULL);
 }
+
 /**
  * _realloc_args - Réalloue dynamiquement un tableau de chaînes
  * @args: tableau de chaînes existant
@@ -30,8 +32,8 @@ char *get_env_path(char **envp)
  *
  * Description :
  * Crée un nouveau tableau avec plus de place,
- * copie les anciens pointeurs dedans,
- * libère l'ancien tableau, et retourne le nouveau.
+ * copie les anciens pointeurs dedans, libère l'ancien tableau,
+ * et retourne le nouveau.
  *
  * Return: pointeur vers le nouveau tableau, ou NULL si malloc échoue
  */

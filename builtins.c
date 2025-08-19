@@ -1,7 +1,4 @@
 #include "main.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 /**
  * handle_builtin - Vérifie et exécute les commandes internes du shell
@@ -9,12 +6,17 @@
  * @envp: tableau des variables d'environnement
  * @line: ligne saisie par l'utilisateur (libérée si nécessaire)
  *
- * Return: 1 si la commande était un builtin et a été exécutée,
- *         0 sinon
+ * Description :
+ * Cette fonction prend en charge l’exécution des commandes internes du shell.
+ * Elle gère notamment :
+ *   - "exit" : qui termine proprement l’exécution du shell,
+ *   - "env"  : qui affiche la liste des variables d’environnement.
+ *
+ * Return: 1 si une commande interne a été reconnue et exécutée, 0 sinon.
  */
 int handle_builtin(char **args, char **envp, char *line)
 {
-	int i;
+	int k;
 
 	if (strcmp(args[0], "exit") == 0)
 	{
@@ -25,8 +27,8 @@ int handle_builtin(char **args, char **envp, char *line)
 
 	if (strcmp(args[0], "env") == 0)
 	{
-		for (i = 0; envp[i] != NULL; i++)
-			printf("%s\n", envp[i]);
+		for (k = 0; envp[k] != NULL; k++)
+			printf("%s\n", envp[k]);
 		return (1);
 	}
 
