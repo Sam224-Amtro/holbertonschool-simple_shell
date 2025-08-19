@@ -71,6 +71,7 @@ void shell_loop(char **argv, char **envp)
 	if (!isatty(STDIN_FILENO))
 		exit(exit_status);
 	free(line);
+	free(args[0]);
 }
 /**
  * main - point d'entrée du shell
