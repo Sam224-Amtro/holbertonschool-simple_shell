@@ -14,7 +14,7 @@
  */
 int handle_builtin(char **args, char **envp, char *line)
 {
-	int k;
+	int i;
 
 	if (strcmp(args[0], "exit") == 0)
 	{
@@ -25,8 +25,8 @@ int handle_builtin(char **args, char **envp, char *line)
 
 	if (strcmp(args[0], "env") == 0)
 	{
-		for (k = 0; envp[k] != NULL; k++)
-			printf("%s\n", envp[k]);
+		for (i = 0; envp[i] != NULL; i++)
+			printf("%s\n", envp[i]);
 		return (1);
 	}
 
