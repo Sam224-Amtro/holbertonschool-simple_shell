@@ -87,3 +87,14 @@ int main(int argc, char **argv, char **envp)
 	shell_loop(argv, envp);
 	return (0);
 }
+/*
+ * fprintf envoie un message d'erreur vers stderr si la commande
+ * n'est pas trouvée.
+ * Le format suit celui de /bin/sh :
+ *    "./hsh: 1: commande: not found"
+ *
+ * Explications des paramètres :
+ *    argv[0] : nom du programme (ici "./hsh")
+ *    1       : numéro de ligne simulée
+ *    args[0] : commande entrée par l'utilisateur
+ */
