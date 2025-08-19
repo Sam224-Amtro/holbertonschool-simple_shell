@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-
 /**
  * remove_trailing_newline - enlève le '\n' final d'une chaîne
  * @line: chaîne à modifier
@@ -20,24 +19,6 @@ void remove_trailing_newline(char *line)
 		}
 	}
 }
-
-/**
- * free_args - libère la mémoire allouée pour args
- * @args: tableau de chaînes
- */
-void free_args(char **args)
-{
-	int i;
-
-	if (!args)
-		return;
-
-	for (i = 0; args[i] != NULL; i++)
-		free(args[i]);
-
-	free(args);
-}
-
 /**
  * shell_loop - boucle principale du shell
  * @argv: tableau des arguments du programme
@@ -50,34 +31,29 @@ void shell_loop(char **argv, char **envp)
 	ssize_t n_read;
 	char **args;
 	int exit_status = 0;
-	int line_count = 0;
 
 	while (1)
 	{
 		if (isatty(STDIN_FILENO))
 			printf("$ ");
-
 		n_read = getline(&line, &len, stdin);
-		if (n_read == -1) /* Ctrl+D ou erreur */
+		if (n_read == -1)
 		{
 			if (isatty(STDIN_FILENO))
 				printf("\n");
 			free(line);
-			exit(exit_status);
+			if (!isatty(STDIN_FILENO))
+				exit(exit_status);
+			else
+				exit(0);
 		}
-
-		line_count++;
 		remove_trailing_newline(line);
 		args = parse_line(line);
 
-		if (args && args[0] != NULL)
+		if (args[0] != NULL)
 		{
 			if (handle_builtin(args, envp, line))
-			{
-				free_args(args);
 				continue;
-			}
-
 			full_path = find_full_path(args[0], envp);
 			if (full_path)
 			{
@@ -86,14 +62,16 @@ void shell_loop(char **argv, char **envp)
 			}
 			else
 			{
-				fprintf(stderr, "%s: %d: %s: not found\n",
-					argv[0], line_count, args[0]);
+				fprintf(stderr, "%s: 1: %s: not found\n", argv[0], args[0]);
 				exit_status = 127;
 			}
 		}
+		free(args);
 	}
+	if (!isatty(STDIN_FILENO))
+		exit(exit_status);
+	free(line);
 }
-
 /**
  * main - point d'entrée du shell
  * @argc: nombre d'arguments (non utilisé)
@@ -108,3 +86,4 @@ int main(int argc, char **argv, char **envp)
 	shell_loop(argv, envp);
 	return (0);
 }
+
