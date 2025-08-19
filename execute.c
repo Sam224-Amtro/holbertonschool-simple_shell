@@ -21,24 +21,32 @@ int execute_command(char *command, char **args, char **envp)
 	int status;
 
 	pid = fork();
-
 	if (pid == -1)
 	{
 		perror("fork");
 		return (-1);
 	}
+
 	if (pid == 0)
 	{
-		execve(command, args, envp);
-		exit(127);
+		if (execve(command, args, envp) == -1)
+		{
+			perror("execve");
+			exit(127);
+		}
 	}
 	else
 	{
-		wait(&status);
-		if (WIFEXITED(status))
+		if (waitpid(pid, &status, 0) == -1)
 		{
-			return (WEXITSTATUS(status));
+			perror("waitpid");
+			return (-1);
 		}
+
+		if (WIFEXITED(status))
+			return (WEXITSTATUS(status));
+		else
+			return (-1);
 	}
 	return (-1);
 }
