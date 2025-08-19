@@ -36,8 +36,12 @@ int execute_command(char *command, char **args, char **envp)
 	{
 		wait(&status);
 		if (WIFEXITED(status))
+		{
 			return (WEXITSTATUS(status));
+		}
 		else
+		{
 			return (-1);
+		}
 	}
 }
