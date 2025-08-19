@@ -1,18 +1,16 @@
 #include "main.h"
 
 /**
- * handle_builtin - Vérifie et exécute les commandes internes du shell
+ * handle_builtin - Exécute les commandes internes du shell
  * @args: tableau contenant la commande et ses arguments
  * @envp: tableau des variables d'environnement
  * @line: ligne saisie par l'utilisateur (libérée si nécessaire)
  *
- * Description :
- * Cette fonction prend en charge l’exécution des commandes internes du shell.
- * Elle gère notamment :
- *   - "exit" : qui termine proprement l’exécution du shell,
- *   - "env"  : qui affiche la liste des variables d’environnement.
+ * Gère les commandes internes comme :
+ *   - "exit" : termine le shell
+ *   - "env"  : affiche les variables d'environnement
  *
- * Return: 1 si une commande interne a été reconnue et exécutée, 0 sinon.
+ * Return: 1 si une commande interne a été exécutée, 0 sinon
  */
 int handle_builtin(char **args, char **envp, char *line)
 {
