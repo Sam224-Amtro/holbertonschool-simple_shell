@@ -3,8 +3,13 @@
 #include <stdlib.h>
 #include <unistd.h>
 /**
- * remove_trailing_newline - enlève le '\n' final d'une chaîne
- * @line: chaîne à modifier
+ * remove_trailing_newline - Supprime le caractère '\n' final d'une chaîne
+ * @line: Chaîne de caractères à nettoyer
+ *
+ * Description:
+ * Parcourt la chaîne de caractères et remplace le premier '\n' rencontré
+ * par '\0'. Cela permet d'éviter qu'un retour à la ligne résiduel
+ * interfère avec le traitement de la commande ou des arguments.
  */
 void remove_trailing_newline(char *line)
 {
