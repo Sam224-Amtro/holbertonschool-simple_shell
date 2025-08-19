@@ -39,9 +39,6 @@ int execute_command(char *command, char **args, char **envp)
 		{
 			return (WEXITSTATUS(status));
 		}
-		else
-		{
-			return (-1);
-		}
 	}
+	return (-1);
 }
