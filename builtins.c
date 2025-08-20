@@ -1,6 +1,21 @@
 #include "main.h"
 
 /**
+ * free_args - libere correctement le tableau d'arguments
+ * @args: tableau d'arguments a liberer
+ */
+void free_args(char **args)
+{
+	int i;
+
+	if (!args)
+		return;
+
+	for (i = 0; args[i]; i++)
+		free(args[i]);
+	free(args);
+}
+/**
  * handle_builtin - Exécute les commandes internes du shell
  * @args: tableau contenant la commande et ses arguments
  * @envp: tableau des variables d'environnement
@@ -15,6 +30,9 @@
 int handle_builtin(char **args, char **envp, char *line)
 {
 	int i;
+
+	if (args[0] == NULL)
+		return (0);
 
 	if (strcmp(args[0], "exit") == 0)
 	{
