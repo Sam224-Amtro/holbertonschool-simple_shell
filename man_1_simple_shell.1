@@ -1,0 +1,64 @@
+.TH SIMPLE_SHELL 1 "August 2025" "Simple Shell Manual"
+
+.SH NAME
+simple_shell \- a simple command-line interpreter
+
+.SH SYNOPSIS
+.B ./hsh
+.RI [ commands ]
+
+.SH DESCRIPTION
+The
+.B simple_shell
+program is a basic reimplementation of a UNIX command-line interpreter.  
+It reads user input, searches for the executable path,  
+and runs the command in a child process.
+
+Main features include:
+.IP \[bu] 2
+Execution of commands found in the PATH
+.IP \[bu] 2
+Support for the builtin command
+.B exit
+to leave the shell
+.IP \[bu] 2
+Support for the builtin command
+.B env
+to display the environment variables
+.IP \[bu] 2
+Support for both interactive and non-interactive modes
+
+.SH BUILTINS
+The supported builtin commands are:
+
+.TP
+.B exit
+Exit the shell.
+
+.TP
+.B env
+Print the current environment.
+
+.SH RETURN VALUE
+The shell returns the exit status of the executed command,  
+or 127 if the command is not found.
+
+.SH EXAMPLES
+Interactive mode:
+.PP
+.nf
+$ ./hsh
+$ ls -l
+$ env
+$ exit
+.fi
+
+Non-interactive mode:
+.PP
+.nf
+$ echo "ls" | ./hsh
+$ echo "exit" | ./hsh
+.fi
+
+.SH AUTHORS
+Sanoussy Fofana / Georgia Boulnois (Holberton School project).
