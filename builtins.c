@@ -26,7 +26,7 @@ void free_args(char **args)
 int handle_builtin(char **args, char **envp, char *line)
 {
 	int i;
-	
+
 	if (strcmp(args[0], "exit") == 0)
 	{
 		free_args(args);

@@ -1,7 +1,4 @@
 #include "main.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
 /**
  * remove_trailing_newline - Supprime le caractère '\n' final d'une chaîne
  * @line: Chaîne de caractères à nettoyer
@@ -24,6 +21,7 @@ void remove_trailing_newline(char *line)
 		}
 	}
 }
+
 /**
  * shell_loop - boucle principale du shell
  * @argv: tableau des arguments du programme
