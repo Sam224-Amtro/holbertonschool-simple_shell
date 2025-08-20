@@ -92,4 +92,3 @@ int main(int argc, char **argv, char **envp)
 	shell_loop(argv, envp);
 	return (0);
 }
-

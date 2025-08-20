@@ -1,0 +1,74 @@
+.TH simple_shell 1 "Avril 2025" "Version 1.0" "Simple Shell Manual"
+
+.SH NAME
+simple_shell \- un shell Unix simple implémenté en C
+
+.SH SYNOPSIS
+.B ./hsh
+.RI [commande [arguments] ...]
+
+.SH DESCRIPTION
+.B simple_shell
+est un interpréteur de commandes minimaliste écrit en C, qui reproduit un comportement similaire à
+.BR /bin/sh .
+
+Il permet l'exécution de commandes Unix en mode interactif et non-interactif.
+
+Le shell supporte :
+.IP \[bu] 2
+L'exécution de programmes via
+.BR execve (2)
+.IP \[bu] 2
+Le mode
+.B interactif
+(avec affichage du prompt \fB$\fR)
+.IP \[bu] 2
+Le mode
+.B non-interactif
+(lecture de commandes depuis un pipe ou un fichier)
+.IP \[bu] 2
+Les commandes internes :
+.BR exit ,
+.BR env
+.IP \[bu] 2
+La recherche automatique des commandes dans les chemins définis par la variable
+.BR PATH .
+
+.SH USAGE
+
+.TP
+.B ./hsh
+Lance le shell en mode interactif (affiche le prompt \fB$\fR et attend les commandes de l’utilisateur).
+
+.TP
+.B echo "ls" | ./hsh
+Exécute le shell en mode non-interactif en lisant les commandes depuis l’entrée standard.
+
+.TP
+.B /bin/ls
+Exécution d'une commande en utilisant son chemin absolu.
+
+.TP
+.B ls -l
+Exécution avec arguments.
+
+.SH EXIT STATUS
+Le shell retourne :
+.IP \[bu] 2
+0 en cas de succès
+.IP \[bu] 2
+127 si la commande est introuvable
+.IP \[bu] 2
+Le code d'erreur de la commande exécutée sinon.
+
+.SH AUTHORS
+Sanoussy Fofana (c27 Laval)
+Georgia Boulnois (c27 Rennes)
+
+.SH SEE ALSO
+.BR sh (1),
+.BR execve (2),
+.BR fork (2),
+.BR wait (2),
+.BR getenv (3)
+
