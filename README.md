@@ -52,23 +52,27 @@ Ce projet (programme **`hsh`**) s’inscrit dans la formation Holberton. Il impl
 
 ```mermaid
 flowchart TD
-    A[Start hsh] --> B{stdin ?}
-    B -->|isatty==true| C[Afficher prompt "$ "]
-    B -->|isatty==false| D[Pas de prompt]
-    C --> E[getline(line)]
-    D --> E[getline(line)]
-    E -->|EOF| Z[Exit (dernier status)]
-    E --> F[remove_trailing_newline]
-    F --> G[parse_line(line) -> args]
-    G -->|args[0]==NULL| C
-    G --> H{handle_builtin(args)}
-    H -->|true| C
-    H -->|false| I[find_full_path(args[0], $PATH)]
-    I -->|trouvé| J[fork/execve(args)]
-    I -->|non trouvé| K[stderr: "hsh: 1: cmd: not found" ; status=127]
-    J --> L[wait & récupérer status]
-    L --> C
-    K --> C
+    A[Début du shell] --> B{Mode interactif ?}
+    B -- Oui --> C[Afficher le prompt $]
+    B -- Non --> D[Lire la commande avec getline]
+    C --> D
+    D --> E{EOF ou erreur ?}
+    E -- Oui --> F[Quitter le shell]
+    E -- Non --> G[Supprimer le \\n final]
+    G --> H[Parser la commande]
+    H --> I{Commande interne ?}
+    I -- Oui --> J[Exécuter builtin]
+    I -- Non --> K[Rechercher chemin avec $PATH]
+    K --> L{Commande trouvée ?}
+    L -- Non --> Z[Erreur : commande introuvable]
+    L -- Oui --> M[Fork du processus]
+    M --> N{Fils ou parent ?}
+    N -- Fils --> O[Exécuter avec execve]
+    N -- Parent --> Q[Attendre le fils]
+    O --> Q
+    J --> R[Retour boucle]
+    Q --> R
+    Z --> R
 ```
 
 ---
