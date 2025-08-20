@@ -1,64 +1,66 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <sys/wait.h>
-#include <errno.h>
 #include "main.h"
 
-/**
-* main - Boucle principale du shell
-*
-* Return: Always 0
-*/
-
-extern char **environ;
-
-int main(void)
+void shell_loop(char **argv, char **envp)
 {
-	char *line = NULL;
-
+	char *line = NULL, *full_path = NULL;
 	size_t len = 0;
-	ssize_t nread;
-	pid_t pid;
+	ssize_t n_read;
+	char **args;
+	int exit_status = 0;
+	unsigned long cmd_no = 0;
 
 	while (1)
-	{
+		{
 		if (isatty(STDIN_FILENO))
 			printf("$ ");
 
-	nread = getline(&line, &len, stdin);
-		if (nread == -1)
+		n_read = getline(&line, &len, stdin);
+		if (n_read == -1)
 		{
 			if (isatty(STDIN_FILENO))
 				printf("\n");
-			break;
+			free(line);
+			exit(exit_status);
 		}
 
-		line[strcspn(line, "\n")] = '\0';
-		if (line[0] == '\0')
+		remove_trailing_newline(line);
+		args = parse_line(line);
+
+		if (!args[0])
+		{
+			free_args(args);
+			cmd_no++;
 			continue;
-
-		pid = fork();
-		if (pid == 0)
-		{
-			char *argv_child[] = { line, NULL };
-
-			execve(line, argv_child, environ);
-
-			fprintf(stderr, "simple_shell: %s: not found\n", line);
-			_exit(127);
 		}
-		else if (pid > 0)
+
+		int placeholder = handle_builtin(args, envp, line);
+		if (placeholder) {
+			free_args(args);
+			cmd_no++;
+			continue;
+		}
+
+		full_path = find_full_path(args[0], envp);
+		if (full_path)
 		{
-			wait(NULL);
+			exit_status = execute_command(full_path, args, envp);
+			free(full_path);
 		}
 		else
 		{
-			perror("fork");
+			fprintf(stderr, "%s: %lu: %s: not found\n",
+				argv[0], cmd_no + 1, args[0]);
+			exit_status = 127;
 		}
 
-	free(line);
-	return (0);
+		free_args(args);
+		cmd_no++;
 	}
+}
+
+int main(int argc, char **argv, char **envp)
+{
+	 (void)argc;
+	shell_loop(argv, envp);
+	return (0);
 }

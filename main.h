@@ -3,35 +3,28 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <unistd.h>
+#include <string.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <errno.h>
+#include <sys/stat.h>
 
-extern char **environ;
-
-/* shell.c */
-void shell_loop(void);
-
-/* parser.c */
-char *read_line(void);
+/* utils */
+void remove_trailing_newline(char *line);
 char **parse_line(char *line);
-
-/* execute.c */
-int execute_command(char *command, char **args, char **envp);
-
-/* builtin.c */
-int handle_builtin(char **args, char **envp, char *line);
-
-/* path.c */
-char *get_env_path(char **envp);
-char *find_full_path(char *command, char **envp);
-
-/* utils.c */
 char **_realloc_args(char **args, int old_size, int new_size);
 void free_args(char **args);
-void print_error(char *prog_name, char *cmd);
-void remove_trailing_newline(char *str);
+char *my_strdup(const char *s);
+
+/* PATH */
+char *get_path_from_env(char **envp);
+char *find_full_path(const char *command, char **envp);
+
+/* builtins / exec */
+int handle_builtin(char **args, char **envp, char *line);
+int execute_command(char *command, char **args, char **envp);
+
+/* loop */
+void shell_loop(char **argv, char **envp);
 
 #endif /* MAIN_H */
