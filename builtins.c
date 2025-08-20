@@ -27,11 +27,15 @@ int handle_builtin(char **args, char **envp, char *line)
 {
 	int i;
 
+	if (args == NULL || args[0] == NULL)
+		return (0);
+
 	if (strcmp(args[0], "exit") == 0)
 	{
 		free_args(args);
 		free(line);
 		exit(0);
+		return (1);
 	}
 
 	if (strcmp(args[0], "env") == 0)
