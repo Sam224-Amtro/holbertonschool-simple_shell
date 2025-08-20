@@ -10,7 +10,7 @@ void shell_loop(char **argv, char **envp)
 	unsigned long cmd_no = 0;
 
 	while (1)
-		{
+	{
 		if (isatty(STDIN_FILENO))
 			printf("$ ");
 
@@ -33,11 +33,17 @@ void shell_loop(char **argv, char **envp)
 			continue;
 		}
 
-		int placeholder = handle_builtin(args, envp, line);
-		if (placeholder) {
-			free_args(args);
-			cmd_no++;
-			continue;
+		/* déclaration tout en haut du bloc */
+		{
+			int placeholder;
+
+			placeholder = handle_builtin(args, envp, line);
+			if (placeholder)
+			{
+				free_args(args);
+				cmd_no++;
+				continue;
+			}
 		}
 
 		full_path = find_full_path(args[0], envp);
@@ -60,7 +66,7 @@ void shell_loop(char **argv, char **envp)
 
 int main(int argc, char **argv, char **envp)
 {
-	 (void)argc;
+	(void)argc;
 	shell_loop(argv, envp);
 	return (0);
 }
