@@ -4,7 +4,8 @@
  * @command: nom de la commande (ex: "ls")
  * @envp: tableau des variables d'environnement
  *
- * Si @command contient un '/', il est considéré comme un chemin absolu ou relatif.
+ * Si @command contient un '/', il est considéré comme un chemin
+ * absolu ou relatif.
  * Sinon, la fonction parcourt les dossiers listés dans la variable PATH et
  * renvoie le premier chemin où la commande est exécutable.
  *
