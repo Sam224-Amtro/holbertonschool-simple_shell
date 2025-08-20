@@ -17,10 +17,11 @@
  */
 int execute_command(char *command, char **args, char **envp)
 {
-	pid_t pid;
 	int status;
+	pid_t pid;
 
 	pid = fork();
+
 	if (pid == -1)
 	{
 		perror("fork");
@@ -29,24 +30,15 @@ int execute_command(char *command, char **args, char **envp)
 
 	if (pid == 0)
 	{
-		if (execve(command, args, envp) == -1)
-		{
-			perror("execve");
-			exit(127);
-		}
+		execve(command, args, envp);
+		exit(127);
 	}
 	else
 	{
-		if (waitpid(pid, &status, 0) == -1)
-		{
-			perror("waitpid");
-			return (-1);
-		}
-
+		wait(&status);
 		if (WIFEXITED(status))
 			return (WEXITSTATUS(status));
 		else
 			return (-1);
 	}
-	return (-1);
 }
