@@ -7,7 +7,7 @@
  * free_args - libère correctement le tableau d'arguments
  * @args: tableau d'arguments à libérer
  *
- * NB: les chaînes pointent vers 'line' (pas besoin de free(args[i]))
+ * NB: si args[i] vient de strtok(line), il ne faut PAS faire free(args[i])
  */
 void free_args(char **args)
 {
