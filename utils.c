@@ -13,13 +13,13 @@
  */
 char *get_path_from_env(char **envp)
 {
-	int k;
+	int i;
 
 
-	for (k = 0; envp[k] != NULL; k++)
+	for (i = 0; envp[i] != NULL; i++)
 	{
-		if (strncmp(envp[k], "PATH=", 5) == 0)
-			return (envp[k] + 5);
+		if (strncmp(envp[i], "PATH=", 5) == 0)
+			return (envp[i] + 5);
 	}
 	return (NULL);
 }
@@ -40,14 +40,14 @@ char *get_path_from_env(char **envp)
 char **_realloc_args(char **args, int old_size, int new_size)
 {
 	char **new_args;
-	int k;
+	int i;
 
 	new_args = malloc(sizeof(char *) * new_size);
 	if (!new_args)
 		return (NULL);
 
-	for (k = 0; k < old_size; k++)
-		new_args[k] = args[k];
+	for (i = 0; i < old_size; i++)
+		new_args[i] = args[i];
 
 	free(args);
 	return (new_args);
