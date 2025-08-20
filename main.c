@@ -33,7 +33,6 @@ void shell_loop(char **argv, char **envp)
 			continue;
 		}
 
-		/* déclaration tout en haut du bloc */
 		{
 			int placeholder;
 
