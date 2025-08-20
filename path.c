@@ -1,5 +1,15 @@
 #include "main.h"
 
+/**
+ * path_join - Concatène un dossier et une commande en un chemin complet
+ * @dir: dossier (ex: /bin)
+ * @cmd: commande (ex: ls)
+ *
+ * Cette fonction crée une nouvelle chaîne contenant `dir` + "/" + `cmd`.
+ * Une mémoire est allouée dynamiquement, à libérer par l'appelant.
+ *
+ * Return: pointeur vers le chemin complet, ou NULL en cas d'échec malloc
+ */
 static char *path_join(const char *dir, const char *cmd)
 {
 	size_t len1 = strlen(dir), len2 = strlen(cmd);
@@ -15,6 +25,15 @@ static char *path_join(const char *dir, const char *cmd)
 	return (full);
 }
 
+/**
+ * get_path_from_env - Récupère la valeur de PATH dans l'environnement
+ * @envp: tableau des variables d'environnement
+ *
+ * Cette fonction parcourt `envp` et retourne un pointeur vers la valeur
+ * associée à la variable PATH (après "PATH=").
+ *
+ * Return: pointeur vers la valeur de PATH, ou NULL si introuvable
+ */
 char *get_path_from_env(char **envp)
 {
 	int i;
@@ -27,6 +46,19 @@ char *get_path_from_env(char **envp)
 	return (NULL);
 }
 
+/**
+ * find_full_path - Trouve le chemin complet d'une commande
+ * @command: commande à rechercher (ex: "ls")
+ * @envp: tableau des variables d'environnement
+ *
+ * Si la commande contient déjà un '/', elle est vérifiée directement.
+ * Sinon, cette fonction parcourt chaque dossier dans PATH et construit
+ * un chemin complet avec la commande. Le premier chemin exécutable trouvé
+ * est retourné.
+ *
+ * Return: pointeur vers une chaîne nouvellement allouée contenant
+ *         le chemin complet, ou NULL si la commande n'est pas trouvée.
+ */
 char *find_full_path(const char *command, char **envp)
 {
 	char *path, *copy, *dir, *full;

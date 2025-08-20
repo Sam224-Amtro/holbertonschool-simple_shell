@@ -1,5 +1,19 @@
 #include "main.h"
 
+/**
+ * shell_loop - Boucle principale du shell
+ * @argv: tableau contenant les arguments passés au programme
+ * @envp: tableau des variables d'environnement
+ *
+ * Description:
+ * Cette fonction affiche un prompt, lit la commande entrée
+ * par l'utilisateur, la découpe en arguments, puis exécute
+ * soit une commande interne (builtin), soit une commande externe.
+ * En cas d'erreur (commande introuvable), un message est affiché
+ * et le statut de sortie est mis à jour.
+ *
+ * Return: Rien (la fonction ne retourne pas, mais appelle exit)
+ */
 void shell_loop(char **argv, char **envp)
 {
 	char *line = NULL, *full_path = NULL;
@@ -63,6 +77,18 @@ void shell_loop(char **argv, char **envp)
 	}
 }
 
+/**
+ * main - Point d'entrée du shell
+ * @argc: nombre d'arguments passés au programme (non utilisé)
+ * @argv: tableau contenant les arguments passés au programme
+ * @envp: tableau des variables d'environnement
+ *
+ * Description:
+ * Cette fonction initialise le shell en appelant shell_loop(),
+ * qui gère ensuite toutes les commandes utilisateur.
+ *
+ * Return: Toujours 0
+ */
 int main(int argc, char **argv, char **envp)
 {
 	(void)argc;

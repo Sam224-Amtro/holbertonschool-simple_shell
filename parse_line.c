@@ -1,5 +1,16 @@
 #include "main.h"
 
+/**
+ * parse_line - Découpe une ligne en tokens (arguments)
+ * @line: ligne saisie par l'utilisateur
+ *
+ * Cette fonction utilise strtok pour découper la chaîne `line`
+ * en plusieurs mots séparés par des espaces, tabulations ou retours
+ * à la ligne. Les arguments sont stockés dans un tableau dynamique
+ * qui est réalloué si nécessaire.
+ *
+ * Return: tableau de pointeurs vers les arguments (se termine par NULL)
+ */
 char **parse_line(char *line)
 {
 	int bufsize = 64, i = 0;
