@@ -1,20 +1,61 @@
 #include "main.h"
-#include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <stdio.h>
+#include <string.h>
 
 /**
- * find_full_path - Obtient le chemin absolu d'une commande
- * @command: nom de la commande (ex: "ls")
+ * get_env_path - Récupère la valeur de PATH dans envp
  * @envp: tableau des variables d'environnement
  *
- * Return: chaîne allouée contenant le chemin complet si trouvé, NULL sinon.
+ * Return: pointeur sur la chaîne PATH (après "PATH="), ou NULL
+ */
+static char *get_env_path(char **envp)
+{
+	int i = 0;
+
+	while (envp && envp[i])
+	{
+		if (strncmp(envp[i], "PATH=", 5) == 0)
+			return (envp[i] + 5);
+		i++;
+	}
+	return (NULL);
+}
+
+/**
+ * build_path - Construit un chemin complet dossier+commande
+ * @dir: dossier (ex: "/bin")
+ * @dir_len: longueur de dir
+ * @command: commande (ex: "ls")
+ *
+ * Return: chaîne allouée contenant dir/command
+ */
+static char *build_path(char *dir, size_t dir_len, char *command)
+{
+	size_t cmd_len = strlen(command);
+	char *full_path = malloc(dir_len + 1 + cmd_len + 1);
+
+	if (!full_path)
+		return (NULL);
+
+	memcpy(full_path, dir, dir_len);
+	full_path[dir_len] = '/';
+	memcpy(full_path + dir_len + 1, command, cmd_len);
+	full_path[dir_len + 1 + cmd_len] = '\0';
+
+	return (full_path);
+}
+
+/**
+ * find_full_path - Cherche le chemin absolu d'une commande
+ * @command: commande (ex: "ls")
+ * @envp: variables d'environnement
+ *
+ * Return: chaîne allouée contenant le chemin complet si trouvé, NULL sinon
  */
 char *find_full_path(char *command, char **envp)
 {
-	char *path, *path_copy, *token, *full_path;
-	size_t len;
+	char *path_env, *start, *end, *full_path;
 
 	if (!command || !*command)
 		return (NULL);
@@ -22,35 +63,27 @@ char *find_full_path(char *command, char **envp)
 	if (strchr(command, '/'))
 		return (strdup(command));
 
-	path = get_path_from_env(envp);
-	if (!path)
+	path_env = get_env_path(envp);
+	if (!path_env)
 		return (NULL);
 
-	path_copy = strdup(path);
-	if (!path_copy)
-		return (NULL);
-
-	token = strtok(path_copy, ":");
-	while (token)
+	start = path_env;
+	while (*start)
 	{
-		len = strlen(token) + strlen(command) + 2;
-		full_path = malloc(len);
+		end = start;
+		while (*end && *end != ':')
+			end++;
+
+		full_path = build_path(start, end - start, command);
 		if (!full_path)
-		{
-			free(path_copy);
 			return (NULL);
-		}
-		snprintf(full_path, len, "%s/%s", token, command);
+
 		if (access(full_path, X_OK) == 0)
-		{
-			free(path_copy);
 			return (full_path);
-		}
 
 		free(full_path);
-		token = strtok(NULL, ":");
+		start = (*end == ':') ? end + 1 : end;
 	}
 
-	free(path_copy);
 	return (NULL);
 }
