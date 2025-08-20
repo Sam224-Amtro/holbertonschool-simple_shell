@@ -42,17 +42,16 @@ void shell_loop(char **argv, char **envp)
 	{
 		if (isatty(STDIN_FILENO))
 			printf("$ ");
+
 		n_read = getline(&line, &len, stdin);
 		if (n_read == -1)
 		{
 			if (isatty(STDIN_FILENO))
 				printf("\n");
 			free(line);
-			if (!isatty(STDIN_FILENO))
-				exit(exit_status);
-			else
-				exit(0);
+			exit(exit_status);
 		}
+
 		remove_trailing_newline(line);
 		args = parse_line(line);
 
@@ -60,6 +59,7 @@ void shell_loop(char **argv, char **envp)
 		{
 			if (handle_builtin(args, envp, line))
 				continue;
+
 			full_path = find_full_path(args[0], envp);
 			if (full_path)
 			{
@@ -72,11 +72,10 @@ void shell_loop(char **argv, char **envp)
 				exit_status = 127;
 			}
 		}
-		free(args);
+
+		free_args(args);
 	}
-	if (!isatty(STDIN_FILENO))
-		exit(exit_status);
-		
+
 	free(line);
 }
 /**
