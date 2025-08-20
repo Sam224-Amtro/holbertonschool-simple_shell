@@ -28,6 +28,7 @@ void remove_trailing_newline(char *line)
  * shell_loop - boucle principale du shell
  * @argv: tableau des arguments du programme
  * @envp: tableau des variables d'environnement
+ *
  */
 void shell_loop(char **argv, char **envp)
 {
