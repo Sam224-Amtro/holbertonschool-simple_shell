@@ -15,30 +15,37 @@
  *
  * Return: code de retour du processus fils, ou -1 en cas d’erreur.
  */
-int execute_command(char *command, char **args, char **envp)
+int execute_command(char *full_path, char **args, char **envp)
 {
+	pid_t pid = fork();
 	int status;
-	pid_t pid;
 
-	pid = fork();
-
-	if (pid == -1)
+	if (pid < 0)
 	{
 		perror("fork");
 		return (-1);
 	}
-
-	if (pid == 0)
+	else if (pid == 0)
 	{
-		execve(command, args, envp);
-		exit(127);
+		if (execve(full_path, args, envp) == -1)
+		{
+			perror("execve");
+			exit(EXIT_FAILURE);
+		}
 	}
 	else
 	{
-		wait(&status);
+		if (waitpid(pid, &status, 0) == -1)
+		{
+			perror("waitpid");
+			return (-1);
+		}
+
 		if (WIFEXITED(status))
 			return (WEXITSTATUS(status));
-		else
-			return (-1);
+		else if (WIFSIGNALED(status))
+			return (128 + WTERMSIG(status));
 	}
+
+	return (0);
 }
