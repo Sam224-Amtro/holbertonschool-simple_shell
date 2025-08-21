@@ -16,28 +16,43 @@ void free_args(char **args)
 }
 
 /**
- * handle_builtin - Exécute les commandes internes du shell
- * @args: tableau contenant la commande et ses arguments
- * @envp: tableau des variables d'environnement
- * @line: ligne saisie par l'utilisateur (libérée si nécessaire)
+ * _env - Affiche l'environnement courant
+ * @envp: Tableau de chaînes contenant les variables d'environnement
+ *
+ * Return: 0 toujours (succès)
+ */
+int _env(char **envp)
+{
+	int i = 0;
+
+	while (envp[i] != NULL)
+	{
+		printf("%s\n", envp[i]);
+		i++;
+	}
+
+	return (0);
+}
+
+/**
+ * handle_builtin - Vérifie et exécute les commandes internes
+ * @args: Tableau d'arguments
+ * @envp: Variables d'environnement
+ * @line: Ligne entrée (pour free si besoin)
  *
  * Return: 1 si une commande interne a été exécutée, 0 sinon
  */
 int handle_builtin(char **args, char **envp, char *line)
 {
-	int i;
-
 	if (strcmp(args[0], "exit") == 0)
 	{
 		free_args(args);
 		free(line);
 		exit(0);
 	}
-
-	if (strcmp(args[0], "env") == 0)
+	else if (strcmp(args[0], "env") == 0)
 	{
-		for (i = 0; envp[i] != NULL; i++)
-			printf("%s\n", envp[i]);
+		_env(envp);
 		return (1);
 	}
 
