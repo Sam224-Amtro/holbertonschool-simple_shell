@@ -1,44 +1,42 @@
 #include "main.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/wait.h>
 
 /**
- * execute_command - Crée un processus fils et exécute une commande
- * @command: chemin absolu de la commande à exécuter
- * @args: tableau des arguments (args[0] = nom de la commande)
+ * execute_command - exécute une commande avec arguments et environnement
+ * @cmd: la commande à exécuter
+ * @args: tableau d'arguments
  * @envp: tableau des variables d'environnement
  *
- * Description :
- * Cette fonction fork le processus courant, puis exécute la commande
- * spécifiée dans le processus fils avec ses arguments et l'environnement.
- * Le processus parent attend la fin du fils et récupère son code de retour.
- *
- * Return: code de retour du processus fils, ou -1 en cas d’erreur.
+ * Crée un processus fils et exécute la commande. Affiche une erreur
+ * si l'exécution échoue.
+ * Retourne 0 si succès, -1 sinon.
  */
-int execute_command(char *command, char **args, char **envp)
+int execute_command(char *cmd, char **args, char **envp)
 {
-	int status;
-	pid_t pid;
+	pid_t pid = fork();
 
-	pid = fork();
-
-	if (pid == -1)
+	if (pid < 0)
 	{
-		perror("fork");
+		perror("fork failed");
 		return (-1);
 	}
 
 	if (pid == 0)
 	{
-		execve(command, args, envp);
-		exit(127);
+		execve(cmd, args, envp);
+		perror("Erreur d'exécution");
+		exit(EXIT_FAILURE);
 	}
 	else
 	{
-		wait(&status);
-		if (WIFEXITED(status))
-			return (WEXITSTATUS(status));
-		else
-			return (-1);
+		int status;
+
+		waitpid(pid, &status, 0);
+		return (0);
 	}
 }
