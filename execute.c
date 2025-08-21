@@ -45,6 +45,7 @@ int execute_command(char *command, char **args, char **envp)
 			return (-1);
 		}
 
+		wait(&status);
 		if (WIFEXITED(status))
 			return (WEXITSTATUS(status));
 		else if (WIFSIGNALED(status))
