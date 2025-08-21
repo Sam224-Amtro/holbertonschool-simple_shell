@@ -51,3 +51,4 @@ char *find_full_path(char *command, char **envp)
 	free(path_copy);
 	return (NULL);
 }
+
