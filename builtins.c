@@ -3,11 +3,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "main.h"
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
-
 /**
  * free_args - libère correctement le tableau d'arguments
  * @args: tableau d'arguments à libérer
