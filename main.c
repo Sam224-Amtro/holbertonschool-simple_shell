@@ -73,7 +73,7 @@ int execute_input(char **argv, char **envp, char *line)
 
 	if (args[0] != NULL)
 	{
-		if (handle_builtin(args, envp, line))
+		if (built_in_checks(args, envp, line))
 		{
 			free_args(args);
 			return (1);

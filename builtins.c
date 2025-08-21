@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <stdlib.h>
+
 /**
  * free_args - libère correctement le tableau d'arguments
  * @args: tableau d'arguments à libérer
@@ -15,35 +17,20 @@ void free_args(char **args)
 		free(args);
 }
 
-/**
- * _env - Affiche l'environnement courant
- * @envp: Tableau de chaînes contenant les variables d'environnement
- *
- * Return: 0 toujours (succès)
- */
-int _env(char **envp)
-{
-	int i = 0;
-
-	while (envp[i] != NULL)
-	{
-		printf("%s\n", envp[i]);
-		i++;
-	}
-
-	return (0);
-}
 
 /**
- * handle_builtin - Vérifie et exécute les commandes internes
- * @args: Tableau d'arguments
+ * built_in_checks - Vérifie et exécute les commandes internes du shell
+ * @args: Tableau d'arguments (args[0] est la commande)
  * @envp: Variables d'environnement
- * @line: Ligne entrée (pour free si besoin)
+ * @line: Ligne complète entrée par l'utilisateur
  *
- * Return: 1 si une commande interne a été exécutée, 0 sinon
+ * Return: 1 si un built-in a été exécuté, 0 sinon
  */
-int handle_builtin(char **args, char **envp, char *line)
+int built_in_checks(char **args, char **envp, char *line)
 {
+	if (args == NULL || args[0] == NULL)
+		return (0);
+
 	if (strcmp(args[0], "exit") == 0)
 	{
 		free_args(args);

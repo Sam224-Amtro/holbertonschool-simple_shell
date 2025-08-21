@@ -7,14 +7,14 @@
 #include <sys/wait.h>
 
 /**
- * execute_command - exécute une commande avec arguments et environnement
- * @cmd: la commande à exécuter
- * @args: tableau d'arguments
- * @envp: tableau des variables d'environnement
+ * execute_command - Exécute une commande avec ses arguments et environnement
+ * @cmd: chemin de la commande
+ * @args: tableau d'arguments (se termine par NULL)
+ * @envp: tableau de variables d'environnement
  *
- * Crée un processus fils et exécute la commande. Affiche une erreur
- * si l'exécution échoue.
- * Retourne 0 si succès, -1 sinon.
+ * Return:
+ *  - le code de retour de la commande exécutée (WEXITSTATUS),
+ *  - ou -1 en cas d’erreur de fork.
  */
 int execute_command(char *cmd, char **args, char **envp)
 {
