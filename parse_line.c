@@ -1,41 +1,42 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "main.h"
 
 /**
  * parse_line - Découpe une ligne en arguments (tokens)
- * @line: chaîne entrée par l’utilisateur
+ * @line: chaîne entrée par l'utilisateur
  *
- * Return: tableau de pointeurs vers les arguments, ou NULL en cas d’erreur
+ * Return: tableau de chaînes terminé par NULL
  */
 char **parse_line(char *line)
 {
 	char *token;
-	char **args;
-	int bufsize = 64;
-	int i = 0;
+	char **args = NULL;
+	size_t bufsize = 0, i = 0;
 
+	if (!line)
+		return (NULL);
+
+	bufsize = 64;
 	args = malloc(sizeof(char *) * bufsize);
 	if (!args)
-	{
-		perror("malloc");
-		exit(EXIT_FAILURE);
-	}
+		return (NULL);
 
-	token = strtok(line, " \t\r\n");
+	token = strtok(line, " \t");
 	while (token != NULL)
 	{
-		args[i++] = token;
+		args[i] = strdup(token);
+		i++;
 
 		if (i >= bufsize)
 		{
-			bufsize += 64;
-			args = _realloc_args(args, i, bufsize);
+			bufsize *= 2;
+			args = realloc(args, sizeof(char *) * bufsize);
 			if (!args)
-			{
-				perror("realloc");
-				exit(EXIT_FAILURE);
-			}
+				return (NULL);
 		}
-		token = strtok(NULL, "\t\r\n");
+		token = strtok(NULL, " \t");
 	}
 	args[i] = NULL;
 	return (args);

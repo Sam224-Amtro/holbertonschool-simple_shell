@@ -15,8 +15,7 @@ char **_realloc_args(char **args, int old_size, int new_size);
 int handle_builtin(char **args, char **envp, char *line);
 void free_args(char **args);
 
-int built_in_checks(char **args, char **envp, char *line);
-int _env(char **envp);
+int handle_builtin(char **args, char **envp, char *line);
 int execute_command(char *cmd, char **args, char **envp);
 char *find_full_path(char *command, char **envp);
 char *get_path_from_env(char **envp);

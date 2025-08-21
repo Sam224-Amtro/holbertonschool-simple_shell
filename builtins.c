@@ -3,6 +3,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "main.h"
+#include <string.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 /**
@@ -17,19 +20,17 @@ void free_args(char **args)
 		free(args);
 }
 
-
 /**
- * built_in_checks - Vérifie et exécute les commandes internes du shell
- * @args: Tableau d'arguments (args[0] est la commande)
- * @envp: Variables d'environnement
- * @line: Ligne complète entrée par l'utilisateur
+ * handle_builtin - Exécute les commandes internes du shell
+ * @args: tableau contenant la commande et ses arguments
+ * @envp: tableau des variables d'environnement
+ * @line: ligne saisie par l'utilisateur (libérée si nécessaire)
  *
- * Return: 1 si un built-in a été exécuté, 0 sinon
+ * Return: 1 si une commande interne a été exécutée, 0 sinon
  */
-int built_in_checks(char **args, char **envp, char *line)
+int handle_builtin(char **args, char **envp, char *line)
 {
-	if (args == NULL || args[0] == NULL)
-		return (0);
+	int i;
 
 	if (strcmp(args[0], "exit") == 0)
 	{
@@ -37,9 +38,11 @@ int built_in_checks(char **args, char **envp, char *line)
 		free(line);
 		exit(0);
 	}
-	else if (strcmp(args[0], "env") == 0)
+
+	if (strcmp(args[0], "env") == 0)
 	{
-		_env(envp);
+		for (i = 0; envp[i] != NULL; i++)
+			printf("%s\n", envp[i]);
 		return (1);
 	}
 
