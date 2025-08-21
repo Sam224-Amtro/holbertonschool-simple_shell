@@ -16,12 +16,7 @@ char *find_full_path(char *command, char **envp)
 	int len;
 
 	if (strchr(command, '/'))
-	{
-		if (access(command, X_OK) == 0)
-			return (strdup(command));
-		else
-			return (NULL);
-	}
+		return (strdup(command));
 
 	path = get_path_from_env(envp);
 	if (!path)
@@ -30,6 +25,7 @@ char *find_full_path(char *command, char **envp)
 	path_copy = strdup(path);
 	if (!path_copy)
 		return (NULL);
+
 	token = strtok(path_copy, ":");
 	while (token)
 	{
@@ -47,9 +43,11 @@ char *find_full_path(char *command, char **envp)
 			free(path_copy);
 			return (full_path);
 		}
+
 		free(full_path);
 		token = strtok(NULL, ":");
 	}
+
 	free(path_copy);
 	return (NULL);
 }
