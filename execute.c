@@ -1,37 +1,41 @@
 #include "main.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 /**
- * execute_command - Crée un processus fils et exécute une commande
+ * execute_command - Crée un processus pour exécuter une commande
  * @command: chemin absolu de la commande à exécuter
- * @args: tableau des arguments (args[0] = nom de la commande)
+ * @args: tableau d'arguments à passer à execve
  * @envp: tableau des variables d'environnement
  *
+ * Return: Code de sortie du fils si terminé normalement
+ *          127 si execve échoue,
+ *         -1 si le processus s'est terminé anormalement.
  * Description :
- * Cette fonction fork le processus courant, puis exécute la commande
- * spécifiée dans le processus fils avec ses arguments et l'environnement.
- * Le processus parent attend la fin du fils et récupère son code de retour.
- *
- * Return: code de retour du processus fils, ou -1 en cas d’erreur.
+ * Cette fonction crée un processus fils pour exécuter une commande
+ * en utilisant execve. Le processus parent attend que le fils termine.
+ * Si execve échoue dans le fils, celui-ci quitte avec le code 127
+ * (convention Unix pour "commande non trouvée").
  */
-int execute_command(char *full_path, char **args, char **envp)
+int execute_command(char *command, char **args, char **envp)
 {
-	pid_t pid = fork();
 	int status;
+	pid_t pid;
 
-	if (pid < 0)
+	pid = fork();
+	if (pid == -1)
 	{
 		perror("fork");
 		return (-1);
 	}
-	else if (pid == 0)
+
+	if (pid == 0)
 	{
-		if (execve(full_path, args, envp) == -1)
-		{
-			perror("execve");
-			exit(EXIT_FAILURE);
-		}
+		execve(command, args, envp);
+		perror("execve");
+		exit(127);
 	}
 	else
 	{
@@ -45,7 +49,7 @@ int execute_command(char *full_path, char **args, char **envp)
 			return (WEXITSTATUS(status));
 		else if (WIFSIGNALED(status))
 			return (128 + WTERMSIG(status));
+		else
+			return (-1);
 	}
-
-	return (0);
 }
