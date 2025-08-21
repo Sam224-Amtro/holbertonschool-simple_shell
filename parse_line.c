@@ -12,31 +12,32 @@
 char **parse_line(char *line)
 {
 	char *token;
-	char **args = NULL;
-	size_t bufsize = 0, i = 0;
+	char **args;
+	int bufsize = 64, i = 0;
 
-	if (!line)
-		return (NULL);
-
-	bufsize = 64;
 	args = malloc(sizeof(char *) * bufsize);
 	if (!args)
-		return (NULL);
+	{
+		perror("malloc");
+		exit(EXIT_FAILURE);
+	}
 
-	token = strtok(line, " \t");
+	token = strtok(line, " \t\r\n");
 	while (token != NULL)
 	{
-		args[i] = strdup(token);
-		i++;
+		args[i++] = token;
 
 		if (i >= bufsize)
 		{
-			bufsize *= 2;
-			args = realloc(args, sizeof(char *) * bufsize);
+			bufsize += 64;
+			args = _realloc_args(args, i, bufsize);
 			if (!args)
-				return (NULL);
+			{
+				perror("realloc");
+				exit(EXIT_FAILURE);
+			}
 		}
-		token = strtok(NULL, " \t");
+		token = strtok(NULL, " \t\r\n");
 	}
 	args[i] = NULL;
 	return (args);
